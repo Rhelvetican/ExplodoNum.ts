@@ -1,0 +1,13 @@
+{
+    "tasks": {},
+    "fmt": {
+        "useTabs": true,
+        "lineWidth": 160,
+        "indentWidth": 4,
+        "semiColons": false
+    },
+    "imports": {
+        "@std/assert": "jsr:@std/assert@1",
+        "ExplodoNum": "./ExplodoNum.ts"
+    }
+}
