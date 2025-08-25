@@ -165,11 +165,8 @@ export class ExplodoNum {
 			}
 
 			while (x.array.length >= 2 && x.array[0].first === 0 && x.array[0].second == 1 && x.array[1].second) {
-				if (x.array[1].second > 1) {
-					x.array[1].second--
-				} else {
-					x.array.splice(1, 1)
-				}
+				if (x.array[1].second > 1) x.array[1].second--
+				else x.array.splice(1, 1)
 
 				x.array[0].second = 10
 			}
@@ -180,8 +177,53 @@ export class ExplodoNum {
 
 				x.array[0].second = 10
 			}
+
+			if (x.array.length >= 2 && x.array[0].first === 0 && x.array[1].first != 1) {
+				if (x.array[0].second) x.array.splice(1, 0, new Pair(x.array[1].first, x.array[0].second))
+				x.array[0].second = 1
+
+				if (x.array[2].second > 1) x.array[2].second--
+				else x.array.splice(2, 1)
+
+				b = true
+			}
+
+			if (x.layer.layer.length >= 1 && x.array.length == 1 && x.array[0].first === 0 && x.layer.layer[0].first != 0) {
+				if (x.array[0].second) x.layer.layer.splice(0, 0, new Pair(x.layer.layer[0].first - 1, x.array[0].second))
+				x.array[0].second = 1
+
+				if (x.layer.layer[1].second > 1) x.layer.layer[1].second--
+				else x.layer.layer.splice(1, 1)
+
+				b = true
+			}
+
+			for (let i = 1; i < x.array.length; ++i) {
+				if (x.array[i].second > R.MAX_SAFE_INTEGER) {
+					if (i != x.array.length - 1 && x.array[i + 1].first == x.array[i].first + 1) x.array[i + 1].second++
+					else x.array.splice(i + 1, 0, new Pair(x.array[i].first, 1))
+
+					if (x.array[0].first === 0) x.array[0].second = x.array[i].second + 1
+					else x.array.splice(0, 0, new Pair(0, x.array[i].second + 1))
+					x.array.splice(1, i)
+					b = true
+				}
+			}
+
+			for (let i = 1; i < x.layer.layer.length; ++i) {
+				if (x.layer.layer[i].second > R.MAX_SAFE_INTEGER) {
+					if (i != x.layer.layer.length - 1 && x.layer.layer[i + 1].first == x.layer.layer[i].first + 1) x.layer.layer[i + 1].second++
+					else x.layer.layer.splice(i + 1, 0, new Pair(x.layer.layer[i].first + 1, 1))
+
+					x.array = [new Pair(0, x.array[i].second + 1)]
+					x.layer.layer.splice(1, i)
+					b = true
+				}
+			}
 		} while (b)
+
 		if (!x.array.length) x.array = [new Pair(0, 0)]
+
 		return x
 	}
 
@@ -200,7 +242,7 @@ export class ExplodoNum {
 	}
 
 	cmp<T extends IntoExplodoNum>(o: T) {
-		const other = o.toExplodoNum().unwrapOrElse(() => new ExplodoNum())
+		const other = o.forceExplodoNum()
 	}
 
 	getOperatorIndex(isLayer: boolean, i: number) {
@@ -240,5 +282,9 @@ export class ExplodoNum {
 
 	clone() {
 		return new ExplodoNum(this.sign, structuredClone(this.array), structuredClone(this.layer))
+	}
+
+	static fromNumber(n: number) {
+		return n.forceExplodoNum()
 	}
 }

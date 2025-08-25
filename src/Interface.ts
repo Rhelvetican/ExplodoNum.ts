@@ -4,6 +4,7 @@ import { Option, Sign } from "./Utils.ts"
 declare global {
 	export interface IntoExplodoNum {
 		toExplodoNum(): Option<ExplodoNum>
+		forceExplodoNum(): ExplodoNum
 	}
 
 	interface Number extends IntoExplodoNum {}
@@ -13,6 +14,7 @@ declare global {
 
 export interface IntoExplodoNum {
 	toExplodoNum(): Option<ExplodoNum>
+	forceExplodoNum(): ExplodoNum
 }
 
 Number.prototype.toExplodoNum = function () {
@@ -22,4 +24,8 @@ Number.prototype.toExplodoNum = function () {
 	tmp.sign = new Sign(val >= 0)
 
 	return new Option(tmp.normalize())
+}
+
+Number.prototype.forceExplodoNum = function () {
+	return this.toExplodoNum().unwrapOrElse(() => new ExplodoNum())
 }
